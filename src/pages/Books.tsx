@@ -1,8 +1,5 @@
 import { useGetBooksQuery } from "../redux/features/books/bookApi";
-import { Link } from "react-router";
 import {
-  FiEdit,
-  FiTrash2,
   FiBookOpen,
 } from "react-icons/fi";
 import Loading from "../utils/Loading";
@@ -37,7 +34,7 @@ const Books = () => {
         <BookNotFound />
       ) : (
         <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {books?.data?.map((book: any) => <BookItem book={book}/>)}
+          {books?.data?.map((book: any) => <BookItem book={book} />)}
         </div>
       )
       }
