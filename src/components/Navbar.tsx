@@ -19,12 +19,10 @@ const Navbar = () => {
       `}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo */}
         <Link
           to="/"
           className="flex items-center gap-2 text-xl font-bold text-blue-700 py-3"
         >
-          {/* <Book className="h-6 w-6 text-blue-600" /> */}
           <img src="/logo.png" alt="" className="h-full w-10 text-blue-600" />
           <span>Library Management</span>
         </Link>

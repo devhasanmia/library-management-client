@@ -9,18 +9,22 @@ const router = createBrowserRouter([
     path: "/",
     Component: MainLayout,
     children: [
-        {
-            path: "/books",
-            Component: Books
-        },
-        {
-            path: "/add-book",
-            Component: AddBook
-        },
-        {
-            path: "borrow-summary",
-            Component: BorrowSummary
-        }
+      {
+        path: "",
+        Component: Books
+      },
+      {
+        path: "books",
+        Component: Books
+      },
+      {
+        path: "add-book",
+        Component: AddBook
+      },
+      {
+        path: "borrow-summary",
+        Component: BorrowSummary
+      }
     ]
   }
 
