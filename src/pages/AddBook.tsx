@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { FiBookOpen, FiUser, FiHash, FiLayers } from "react-icons/fi";
 import { MdCategory } from "react-icons/md";
+import { useAddBookMutation } from "../redux/features/books/bookApi";
+import { toast } from "sonner";
 
 const genreOptions = [
   "FICTION",
@@ -13,12 +15,16 @@ const genreOptions = [
 
 const AddBook = () => {
   const { register, handleSubmit, reset } = useForm();
+  const [addBook] = useAddBookMutation()
+  const onSubmit = async (data: any) => {
+    try {
+      const result = await addBook(data);
+      toast.success(result?.data?.message)
+      reset();
+    } catch (error) {
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    reset();
+    }
   };
-
   return (
     <div className="min-h-[calc(100vh-140px)] flex items-center justify-center  px-4 py-12">
       <div className="w-full max-w-6xl bg-white shadow-2xl rounded-3xl p-10 border border-gray-200">
@@ -100,13 +106,23 @@ const AddBook = () => {
             <div className="relative">
               <FiLayers className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                {...register("copies", { required: true, min: 1 })}
+                {...register("copies", {
+                  required: true,
+                  min: {
+                    value: 1,
+                    message: "Copies must be at least 1",
+                  },
+                  valueAsNumber: true,
+                })}
                 type="number"
+                min="1"
+                step="1"
                 placeholder="Number of copies"
                 className="pl-12 pr-4 py-3 w-full bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
               />
             </div>
           </div>
+
 
           {/* Description */}
           <div className="col-span-full">
@@ -125,7 +141,7 @@ const AddBook = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-3 rounded-full shadow-lg hover:shadow-2xl transition-all text-lg font-semibold"
             >
-               Add Book
+              Add Book
             </button>
           </div>
         </form>
