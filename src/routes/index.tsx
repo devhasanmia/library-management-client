@@ -1,10 +1,27 @@
 import { createBrowserRouter } from "react-router";
-import Book from "../pages/Book";
+import MainLayout from "../components/layouts/MainLayout";
+import Books from "../pages/Books";
+import AddBook from "../pages/AddBook";
+import BorrowSummary from "../pages/BorrowSummary";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: Book,
+    Component: MainLayout,
+    children: [
+        {
+            path: "/books",
+            Component: Books
+        },
+        {
+            path: "/add-book",
+            Component: AddBook
+        },
+        {
+            path: "borrow-summary",
+            Component: BorrowSummary
+        }
+    ]
   }
 
 ]);
