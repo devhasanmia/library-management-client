@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -56,9 +57,48 @@ const BookItem = ({ book }: any) => {
         <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
           {genre}
         </span>
-        <div className="bg-gray-100 w-10 h-10 rounded-lg flex items-center justify-center">
-          <FiBookOpen className="text-gray-500 text-lg" />
-        </div>
+        <Dialog>
+  <DialogTrigger asChild>
+    <Button
+      variant="ghost"
+      className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+    >
+      <FiBookOpen /> Details
+    </Button>
+  </DialogTrigger>
+
+  <DialogContent className="max-w-md sm:max-w-lg">
+    <DialogHeader>
+      <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+      <DialogDescription>Book Details</DialogDescription>
+    </DialogHeader>
+
+    <div className="grid gap-4 py-4 text-sm text-gray-700">
+      <p>
+        <span className="font-semibold">Author:</span> {author}
+      </p>
+      <p>
+        <span className="font-semibold">Genre:</span> {genre}
+      </p>
+      <p>
+        <span className="font-semibold">ISBN:</span> {isbn}
+      </p>
+      {description && (
+        <p>
+          <span className="font-semibold">Description:</span> {description}
+        </p>
+      )}
+      <p>
+        <span className="font-semibold">Available Copies:</span>{" "}
+        {available ? `${copies}` : "Not Available"}
+      </p>
+    </div>
+
+    <DialogFooter>
+      <Button variant="outline">Close</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
       </div>
 
       {/* Title & Author */}
@@ -67,11 +107,7 @@ const BookItem = ({ book }: any) => {
       </h3>
       <p className="text-sm text-gray-500 mb-3">by {author}</p>
 
-      {/* Description */}
-      {description && (
-        <p className="text-gray-600 text-sm mb-3 line-clamp-3">{description}</p>
-      )}
-
+       
       {/* ISBN */}
       <div className="text-xs text-gray-400 mb-4 flex justify-between">
         <span>ISBN: {isbn}</span>

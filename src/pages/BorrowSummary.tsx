@@ -1,26 +1,17 @@
 import { useGetBorrowQuery } from "@/redux/features/borrow/borrowApi";
 import Loading from "../utils/Loading";
 import ErrorAlert from "../utils/ErrorAlert";
-import {
-  FiBook,
-  FiHash,
-  FiTrendingUp,
-  FiBookOpen,
-} from "react-icons/fi";
+import { FiBook, FiHash, FiTrendingUp, FiBookOpen } from "react-icons/fi";
 
 const BorrowSummary = () => {
   const { data: borrowData, isLoading, isError } = useGetBorrowQuery("");
-
   if (isLoading) return <Loading />;
   if (isError) return <ErrorAlert />;
-
   const borrowList = borrowData?.data || [];
-
   const totalBooksBorrowed = borrowList.reduce(
     (sum: number, item: any) => sum + item.totalQuantity,
     0
   );
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header Section */}
