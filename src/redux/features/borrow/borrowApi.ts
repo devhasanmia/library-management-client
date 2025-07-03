@@ -7,7 +7,7 @@ export const borrowApi = baseApi.injectEndpoints({
                 url: "/borrow",
                 method: "GET",
             }),
-            providesTags: ["Book"]
+            providesTags: ["Book", "borrow"]
         }),
         addBorrow: builder.mutation({
             query: (data) => ({
@@ -20,4 +20,4 @@ export const borrowApi = baseApi.injectEndpoints({
     }),
 });
 
-export const { useAddBorrowMutation } = borrowApi;
+export const { useAddBorrowMutation, useGetBorrowQuery } = borrowApi;

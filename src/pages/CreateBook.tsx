@@ -3,6 +3,7 @@ import { FiBookOpen, FiUser, FiHash, FiLayers } from "react-icons/fi";
 import { MdCategory } from "react-icons/md";
 import { useAddBookMutation } from "../redux/features/books/bookApi";
 import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 const genreOptions = [
   "FICTION",
@@ -16,11 +17,13 @@ const genreOptions = [
 const CreateBook = () => {
   const { register, handleSubmit, reset } = useForm();
   const [addBook] = useAddBookMutation()
+  const navigate = useNavigate()
   const onSubmit = async (data: any) => {
     try {
       const result = await addBook(data).unwrap();
       toast.success(result?.message)
       reset();
+      navigate("/")
     } catch (error:any) {
       toast.warning(error?.data?.message)
     }

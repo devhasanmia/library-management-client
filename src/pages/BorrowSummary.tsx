@@ -1,106 +1,124 @@
-import { useState, useEffect } from "react";
+import { useGetBorrowQuery } from "@/redux/features/borrow/borrowApi";
 import Loading from "../utils/Loading";
 import ErrorAlert from "../utils/ErrorAlert";
-
-interface BorrowSummaryItem {
-  id: string;
-  title: string;
-  isbn: string;
-  totalBorrowed: number;
-}
-
-const demoData: BorrowSummaryItem[] = [
-  {
-    id: "1",
-    title: "The Great Gatsby",
-    isbn: "9780743273565",
-    totalBorrowed: 12,
-  },
-  {
-    id: "2",
-    title: "A Brief History of Time",
-    isbn: "9780553380163",
-    totalBorrowed: 7,
-  },
-  {
-    id: "3",
-    title: "Harry Potter and the Sorcerer's Stone",
-    isbn: "9780590353427",
-    totalBorrowed: 20,
-  },
-  {
-    id: "4",
-    title: "The Art of War",
-    isbn: "9781599869773",
-    totalBorrowed: 4,
-  },
-];
+import {
+  FiBook,
+  FiHash,
+  FiTrendingUp,
+  FiBookOpen,
+} from "react-icons/fi";
 
 const BorrowSummary = () => {
-  const [data, setData] = useState<BorrowSummaryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const { data: borrowData, isLoading, isError } = useGetBorrowQuery("");
 
-  // Simulate API call
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setData(demoData);
-      setIsLoading(false);
-    }, 1500);
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorAlert />;
 
-    return () => clearTimeout(timer);
-  }, []);
+  const borrowList = borrowData?.data || [];
 
-  if (isLoading) {
-    return (
-      <Loading />
-    );
-  }
-
-  if (isError) {
-    return (
-      <ErrorAlert/>
-    );
-  }
-
-  if (data.length === 0) {
-    return (
-      <div className="text-center py-20">
-        <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-          📚
-        </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-1">
-          No borrow records found
-        </h3>
-        <p className="text-gray-500 max-w-md mx-auto">
-          No books have been borrowed yet.
-        </p>
-      </div>
-    );
-  }
+  const totalBooksBorrowed = borrowList.reduce(
+    (sum: number, item: any) => sum + item.totalQuantity,
+    0
+  );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800 flex items-center gap-2">
-        📋 Borrow Summary
-      </h1>
-
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {data.map(({ id, title, isbn, totalBorrowed }) => (
-          <div
-            key={id}
-            className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300"
-          >
-            <h2 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-              {title}
-            </h2>
-            <p className="text-sm text-gray-500 mb-3">ISBN: {isbn}</p>
-            <p className="text-indigo-600 font-semibold text-lg">
-              Total Borrowed: {totalBorrowed}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header Section */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+              <FiBookOpen className="text-blue-600" />
+              Borrow Summary
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Overview of all borrowed books in the library
             </p>
           </div>
-        ))}
+          <div className="flex gap-3">
+            <div className="bg-green-50 rounded-lg px-4 py-2 inline-flex items-center gap-2">
+              <FiTrendingUp className="text-green-600" />
+              <span className="text-green-800 font-medium">
+                Total Copies : {totalBooksBorrowed}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Content Section */}
+      {!borrowList.length ? (
+        <div className="bg-white rounded-xl shadow-sm p-8 text-center min-h-[300px] flex flex-col items-center justify-center">
+          <div className="bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mb-4">
+            <FiBook className="text-indigo-600" size={28} />
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            No borrow records found
+          </h3>
+          <p className="text-gray-500 max-w-md">
+            Currently there are no books borrowed from the library.
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FiBook size={16} />
+                      Book Title
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FiHash size={16} />
+                      ISBN
+                    </div>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Borrowed Copies
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {borrowList.map((item: any) => (
+                  <tr
+                    key={item.book.isbn}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.book.title}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {item.book.isbn}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-sm font-medium">
+                        {item.totalQuantity}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
