@@ -24,7 +24,7 @@ const Books = () => {
             Browse our collection of {books?.data?.length || 0} books
           </p>
         </div>
-        <PrimaryButton text="Add New Book" to="/add-book" />
+        <PrimaryButton text="Add New Book" to="/create-book" />
       </div>
       {isLoading ? (
         <Loading />

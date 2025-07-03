@@ -7,6 +7,7 @@ export const bookApi = baseApi.injectEndpoints({
                 url: "/books",
                 method: "GET",
             }),
+            providesTags: ["Book"]
         }),
         addBook: builder.mutation({
             query: (data) => ({
@@ -14,8 +15,16 @@ export const bookApi = baseApi.injectEndpoints({
                 method: "POST",
                 body: data
             }),
+            invalidatesTags: ["borrow", "Book"]
+        }),
+        deleteBook: builder.mutation({
+            query: (id) => ({
+                url: `books/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["borrow", "Book"]
         }),
     }),
 });
 
-export const { useGetBooksQuery,useAddBookMutation } = bookApi;
+export const { useGetBooksQuery, useAddBookMutation, useDeleteBookMutation } = bookApi;

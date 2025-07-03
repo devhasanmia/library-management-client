@@ -13,7 +13,7 @@ const genreOptions = [
   "FANTASY",
 ];
 
-const AddBook = () => {
+const CreateBook = () => {
   const { register, handleSubmit, reset } = useForm();
   const [addBook] = useAddBookMutation()
   const onSubmit = async (data: any) => {
@@ -150,4 +150,4 @@ const AddBook = () => {
   );
 };
 
-export default AddBook;
+export default CreateBook;

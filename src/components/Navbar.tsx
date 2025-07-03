@@ -33,7 +33,7 @@ const Navbar = () => {
             <Book size={18} />
             Books
           </NavLink>
-          <NavLink to="/add-book" className={navItemClass}>
+          <NavLink to="/create-book" className={navItemClass}>
             <BookPlus size={18} />
             Add Book
           </NavLink>
@@ -67,7 +67,7 @@ const Navbar = () => {
             Books
           </NavLink>
           <NavLink
-            to="/add-book"
+            to="/create-book"
             className={navItemClass}
             onClick={() => setIsOpen(false)}
           >
