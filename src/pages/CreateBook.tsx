@@ -18,11 +18,11 @@ const CreateBook = () => {
   const [addBook] = useAddBookMutation()
   const onSubmit = async (data: any) => {
     try {
-      const result = await addBook(data);
-      toast.success(result?.data?.message)
+      const result = await addBook(data).unwrap();
+      toast.success(result?.message)
       reset();
-    } catch (error) {
-
+    } catch (error:any) {
+      toast.warning(error?.data?.message)
     }
   };
   return (
