@@ -1,10 +1,10 @@
 import { FiBookOpen, FiEdit, FiTrash2 } from "react-icons/fi";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAddBorrowMutation } from "@/redux/features/borrow/borrowApi";
-import { useDeleteBookMutation } from "@/redux/features/books/bookApi";
-
+import { useDeleteBookMutation, useUpdateBookMutation } from "@/redux/features/books/bookApi";
+const genreOptions = ["FICTION", "NON_FICTION", "SCIENCE", "HISTORY"];
 import {
   Dialog,
   DialogTrigger,
@@ -28,39 +28,48 @@ import {
 } from "./ui/alert-dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useForm } from "react-hook-form";
 
 const BookItem = ({ book }: any) => {
   const { _id, title, author, genre, isbn, description, copies, available } = book;
   const navigate = useNavigate();
-
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [deleteBook] = useDeleteBookMutation();
-//   const [updateBook] = useUpdateBookMutation();
+  const [updateBook] = useUpdateBookMutation();
   const [addBorrow] = useAddBorrowMutation();
-
-  const [editForm, setEditForm] = useState({
-    title,
-    author,
-    genre,
-    isbn,
-    copies,
-  });
 
   const [dueDate, setDueDate] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setEditForm((prev) => ({
-      ...prev,
-      [name]: name === "copies" ? Number(value) : value,
-    }));
-  };
+  const {
+    register,
+    handleSubmit,
+    setValue
+  } = useForm({
+    defaultValues: {
+      title,
+      author,
+      genre,
+      isbn,
+      copies,
+      description,
+    },
+  });
 
-  const handleUpdate = async () => {
+  useEffect(() => {
+    setValue("title", title);
+    setValue("author", author);
+    setValue("genre", genre);
+    setValue("isbn", isbn);
+    setValue("copies", copies);
+    setValue("description", description || "");
+  }, [title, author, genre, isbn, copies, description, setValue]);
+  const handleUpdate = async (data: any) => {
     try {
-    //   const updatedBook = { ...editForm, _id };
-    //   await updateBook(updatedBook).unwrap();
+      await updateBook({ id: book._id, data }).unwrap();
       toast.success("Book updated successfully!");
+      navigate("/")
+      setIsEditOpen(false);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to update book");
     }
@@ -89,16 +98,14 @@ const BookItem = ({ book }: any) => {
       toast.warning(error?.data?.message || "Failed to delete the book");
     }
   };
-
   return (
     <div className="bg-white shadow-xl rounded-3xl border border-gray-100 p-6 transition-transform hover:-translate-y-1 hover:shadow-2xl duration-300">
-      {/* Header */}
+
       <div className="flex justify-between items-start mb-4">
         <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide">
           {genre}
         </span>
 
-        {/* Book Details Modal */}
         <Dialog>
           <DialogTrigger asChild>
             <Button
@@ -129,131 +136,76 @@ const BookItem = ({ book }: any) => {
         </Dialog>
       </div>
 
-      {/* Title & Author */}
       <h3 className="text-xl font-bold text-gray-900 mb-1 line-clamp-2">{title}</h3>
       <p className="text-sm text-gray-500 mb-3">by {author}</p>
-
-      {/* ISBN */}
       <div className="text-xs text-gray-400 mb-4 flex justify-between">
         <span>ISBN: {isbn}</span>
       </div>
-
-      {/* Availability */}
       <div className="mb-4">
         <span
-          className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${
-            available && copies > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-          }`}
+          className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${available && copies > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
         >
           {copies > 0 ? `Available (${copies})` : "Unavailable"}
         </span>
       </div>
-
-      {/* Actions */}
       <div className="flex justify-between items-center pt-4 text-sm text-gray-600">
-        {/* Edit Modal */}
-       <Dialog>
-  <DialogTrigger asChild>
-    <Button variant="ghost" className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
-      <FiEdit /> Edit
-    </Button>
-  </DialogTrigger>
-
-  <DialogContent className="max-w-2xl">
-    <DialogHeader>
-      <DialogTitle className="text-2xl font-bold">Edit Book</DialogTitle>
-      <DialogDescription>Edit and update book information</DialogDescription>
-    </DialogHeader>
-
-    <form  className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Title */}
-      <div className="col-span-1">
-        <label className="text-gray-700 font-medium mb-1 block">Title</label>
-        <input
-        //   {...register("title", { required: true })}
-          type="text"
-          placeholder="Book title"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-      </div>
-
-      {/* Author */}
-      <div className="col-span-1">
-        <label className="text-gray-700 font-medium mb-1 block">Author</label>
-        <input
-        //   {...register("author", { required: true })}
-          type="text"
-          placeholder="Author name"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-      </div>
-
-      {/* Genre */}
-      <div className="col-span-1">
-        <label className="text-gray-700 font-medium mb-1 block">Genre</label>
-        <select
-        //   {...register("genre", { required: true })}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none text-gray-700"
-        >
-          <option value="">Select Genre</option>
-          {/* {genreOptions.map((g) => (
-            <option key={g} value={g}>{g.replace("_", " ")}</option>
-          ))} */}
-        </select>
-      </div>
-
-      {/* ISBN */}
-      <div className="col-span-1">
-        <label className="text-gray-700 font-medium mb-1 block">ISBN</label>
-        <input
-        //   {...register("isbn", { required: true })}
-          type="text"
-          placeholder="ISBN number"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-      </div>
-
-      {/* Copies */}
-      <div className="col-span-1">
-        <label className="text-gray-700 font-medium mb-1 block">Copies</label>
-        <input
-        //   {...register("copies", { required: true, valueAsNumber: true })}
-          type="number"
-          min="1"
-          placeholder="Total copies"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-      </div>
-
-      {/* Description */}
-      <div className="col-span-full">
-        <label className="text-gray-700 font-medium mb-1 block">Description</label>
-        <textarea
-        //   {...register("description")}
-          rows={3}
-          placeholder="Book description"
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-      </div>
-
-      <div className="col-span-full flex justify-end gap-4 mt-4">
-        <DialogClose asChild>
-          <Button type="button" variant="outline">Cancel</Button>
-        </DialogClose>
-        <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-700">Update Book</Button>
-      </div>
-    </form>
-  </DialogContent>
-</Dialog>
-
-        {/* Borrow Modal */}
+        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => setIsEditOpen(true)} variant="ghost" className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+              <FiEdit /> Edit
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold">Edit Book</DialogTitle>
+              <DialogDescription>Edit and update book information</DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit(handleUpdate)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-gray-700 font-medium block">Title</label>
+                <input {...register("title", { required: true })} className="input" />
+              </div>
+              <div>
+                <label className="text-gray-700 font-medium block">Author</label>
+                <input {...register("author", { required: true })} className="input" />
+              </div>
+              <div>
+                <label className="text-gray-700 font-medium block">Genre</label>
+                <select {...register("genre", { required: true })} className="input">
+                  <option value="">Select Genre</option>
+                  {genreOptions?.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-gray-700 font-medium block">ISBN</label>
+                <input {...register("isbn", { required: true })} className="input" />
+              </div>
+              <div>
+                <label className="text-gray-700 font-medium block">Copies</label>
+                <input type="number" min="1" {...register("copies", { required: true, valueAsNumber: true })} className="input" />
+              </div>
+              <div className="col-span-full">
+                <label className="text-gray-700 font-medium block">Description</label>
+                <textarea {...register("description")} rows={3} className="input" />
+              </div>
+              <div className="col-span-full flex justify-end gap-4 mt-4">
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit" className="bg-blue-600 text-white hover:bg-blue-700">Update Book</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
         <Dialog>
           <DialogTrigger asChild>
             <Button
               variant="ghost"
-              className={`px-2 py-1 text-sm font-semibold ${
-                copies > 0 ? "text-green-600" : "text-gray-400"
-              }`}
+              className={`px-2 py-1 text-sm font-semibold ${copies > 0 ? "text-green-600" : "text-gray-400"
+                }`}
               disabled={copies <= 0}
             >
               <FiBookOpen className="mr-1" /> Borrow
@@ -287,8 +239,6 @@ const BookItem = ({ book }: any) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* Delete Confirm */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost" className="text-red-600 hover:text-red-800 flex items-center gap-1">
