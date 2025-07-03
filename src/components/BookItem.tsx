@@ -4,6 +4,7 @@ import { useDeleteBookMutation } from "../redux/features/books/bookApi";
 import { toast } from "sonner";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -15,7 +16,17 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { useAddBorrowMutation } from "@/redux/features/borrow/borrowApi";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 const BookItem = ({ book }: any) => {
   const { _id, title, author, genre, isbn, description, copies, available } =
     book;
@@ -23,7 +34,7 @@ const BookItem = ({ book }: any) => {
 
   const [dueDate, setDueDate] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleDelete = async (id: string) => {
     try {
       await deleteBook(id).unwrap();
@@ -43,7 +54,7 @@ const BookItem = ({ book }: any) => {
       };
       const result = await addBorrow(payload).unwrap();
       toast.success(result?.message);
-      navigate("/borrow-summary")
+      navigate("/borrow-summary");
     } catch (error: any) {
       toast.warning(error?.data?.message);
       console.log(error.message);
@@ -58,47 +69,50 @@ const BookItem = ({ book }: any) => {
           {genre}
         </span>
         <Dialog>
-  <DialogTrigger asChild>
-    <Button
-      variant="ghost"
-      className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
-    >
-      <FiBookOpen /> Details
-    </Button>
-  </DialogTrigger>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              className="text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              <FiBookOpen /> Details
+            </Button>
+          </DialogTrigger>
 
-  <DialogContent className="max-w-md sm:max-w-lg">
-    <DialogHeader>
-      <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
-      <DialogDescription>Book Details</DialogDescription>
-    </DialogHeader>
+          <DialogContent className="max-w-md sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+              <DialogDescription>Book Details</DialogDescription>
+            </DialogHeader>
 
-    <div className="grid gap-4 py-4 text-sm text-gray-700">
-      <p>
-        <span className="font-semibold">Author:</span> {author}
-      </p>
-      <p>
-        <span className="font-semibold">Genre:</span> {genre}
-      </p>
-      <p>
-        <span className="font-semibold">ISBN:</span> {isbn}
-      </p>
-      {description && (
-        <p>
-          <span className="font-semibold">Description:</span> {description}
-        </p>
-      )}
-      <p>
-        <span className="font-semibold">Available Copies:</span>{" "}
-        {available ? `${copies}` : "Not Available"}
-      </p>
-    </div>
+            <div className="grid gap-4 py-4 text-sm text-gray-700">
+              <p>
+                <span className="font-semibold">Author:</span> {author}
+              </p>
+              <p>
+                <span className="font-semibold">Genre:</span> {genre}
+              </p>
+              <p>
+                <span className="font-semibold">ISBN:</span> {isbn}
+              </p>
+              {description && (
+                <p>
+                  <span className="font-semibold">Description:</span>{" "}
+                  {description}
+                </p>
+              )}
+              <p>
+                <span className="font-semibold">Available Copies:</span>{" "}
+                {available ? `${copies}` : "Not Available"}
+              </p>
+            </div>
 
-    <DialogFooter>
-      <Button variant="outline">Close</Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Close</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Title & Author */}
@@ -107,7 +121,6 @@ const BookItem = ({ book }: any) => {
       </h3>
       <p className="text-sm text-gray-500 mb-3">by {author}</p>
 
-       
       {/* ISBN */}
       <div className="text-xs text-gray-400 mb-4 flex justify-between">
         <span>ISBN: {isbn}</span>
@@ -190,36 +203,36 @@ const BookItem = ({ book }: any) => {
         </Dialog>
 
         <AlertDialog>
-  <AlertDialogTrigger asChild>
-    <Button
-      variant="ghost"
-      className="text-red-600 hover:text-red-800 flex items-center gap-1"
-    >
-      <FiTrash2 /> Delete
-    </Button>
-  </AlertDialogTrigger>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              className="text-red-600 hover:text-red-800 flex items-center gap-1"
+            >
+              <FiTrash2 /> Delete
+            </Button>
+          </AlertDialogTrigger>
 
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-      <AlertDialogDescription>
-        This action cannot be undone. It will permanently delete the book:{" "}
-        <span className="font-semibold text-gray-900">{title}</span>
-      </AlertDialogDescription>
-    </AlertDialogHeader>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. It will permanently delete the
+                book:{" "}
+                <span className="font-semibold text-gray-900">{title}</span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
 
-    <AlertDialogFooter>
-      <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction
-        className="bg-red-600 hover:bg-red-700 text-white"
-        onClick={() => handleDelete(_id)}
-      >
-        Yes, Delete
-      </AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
-
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => handleDelete(_id)}
+              >
+                Yes, Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

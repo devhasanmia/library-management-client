@@ -3,6 +3,7 @@ import MainLayout from "../components/layouts/MainLayout";
 import Books from "../pages/Books";
 import BorrowSummary from "../pages/BorrowSummary";
 import CreateBook from "../pages/CreateBook";
+import NotFound from "@/pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "borrow-summary",
         Component: BorrowSummary
+      },
+      {
+        path: "*",
+        Component: NotFound
       }
     ]
   }
